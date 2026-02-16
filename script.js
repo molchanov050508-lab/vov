@@ -1,4 +1,4 @@
-// ========== НАВИГАЦИЯ ==========
+
 const navButtons = document.querySelectorAll('.nav-btn');
 const sections = document.querySelectorAll('.section');
 
@@ -15,8 +15,6 @@ navButtons.forEach(button => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
-
-// ========== РЕЖИМ ДЛЯ СЛАБОВИДЯЩИХ ==========
 const accessibilityBtn = document.getElementById('accessibilityBtn');
 let accessibilityMode = false;
 
@@ -26,7 +24,6 @@ accessibilityBtn.addEventListener('click', () => {
     accessibilityBtn.textContent = accessibilityMode ? '👁️✓' : '👁️';
 });
 
-// ========== СЧЁТЧИК ДНЕЙ ДО ДНЯ ПОБЕДЫ ==========
 function updateDaysCounter() {
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -51,7 +48,6 @@ function getDaysWord(days) {
 
 updateDaysCounter();
 
-// ========== СЛУЧАЙНЫЙ ФАКТ ==========
 const facts = [
     "Блокада Ленинграда продолжалась 872 дня. Жители проявили невероятное мужество, город не сдался!",
     "Зоя Космодемьянская стала первой женщиной, удостоенной звания Героя Советского Союза во время войны.",
@@ -612,3 +608,243 @@ if (daysCounter) {
 console.log('🕊️ Великая Отечественная война 1941-1945 | Интерактивный плакат загружен');
 console.log('💡 Используйте навигацию для изучения разных разделов');
 console.log('⭐ Не забудьте пройти викторину!');
+// ========== ИГРА "УГАДАЙ ПЕСНЮ" ==========
+const songs = [
+    {
+        name: 'Священная война',
+        hint: 'Эта песня стала гимном защиты Родины в первые дни войны. Начинается со слов: "Вставай, страна огромная!"',
+        audio: 'svjaschennaja-vojna-gimn-velikoj-otechestvennoj-vojny-19411945-gg.mp3'
+    },
+    {
+        name: 'Катюша',
+        hint: 'Песня о девушке, которая ждет своего любимого на высоком берегу. Её именем назвали гвардейский миномёт.',
+        audio: 'Ansambl_Rossiyanochka_-_Katyusha_M_Blanter_-_M_Isakovskijj_77236370.mp3'
+    },
+    {
+        name: 'День Победы',
+        hint: 'Главная песня праздника 9 мая. Была написана через 30 лет после окончания войны.',
+        audio: 'Lev_Leshhenko_-_Den_Pobedy_D_Tukhmanov_V_KHaritonov_2404_69319177.mp3'
+    },
+    {
+        name: 'Тёмная ночь',
+        hint: 'Песня о любви и разлуке, написанная для фильма "Два бойца". В ней солдат вспоминает о семье.',
+        audio: 'Mark_Bernes_-_Tjomnaya_noch_48717724.mp3' // Замените на реальный файл
+    },
+    {
+        name: 'Синий платочек',
+        hint: 'Песня о платочке, который стал символом верности и любви. Особенно популярной стала в исполнении Клавдии Шульженко.',
+        audio: 'Klavdiya_SHulzhenko_-_Sinijj_platochek_48706159.mp3' // Замените на реальный файл
+    }
+];
+
+let currentSongIndex = 0;
+let songAnswers = new Array(songs.length).fill(null);
+let currentAudio = null;
+let isPlaying = false;
+
+// DOM элементы
+const playBtn = document.getElementById('playSongBtn');
+const pauseBtn = document.getElementById('pauseSongBtn');
+const stopBtn = document.getElementById('stopSongBtn');
+const submitBtn = document.getElementById('submitSongBtn');
+const prevBtn = document.getElementById('prevSongBtn');
+const nextBtn = document.getElementById('nextSongBtn');
+const songInput = document.getElementById('songAnswerInput');
+const songFeedback = document.getElementById('songFeedback');
+const songHint = document.getElementById('songHint');
+const currentSongSpan = document.getElementById('currentSongNumber');
+const totalSongsSpan = document.getElementById('totalSongs');
+const correctCountSpan = document.getElementById('correctSongsCount');
+const totalCountSpan = document.getElementById('totalSongsCount');
+const progressBar = document.getElementById('songProgress');
+
+// Инициализация игры
+function initSongGame() {
+    totalSongsSpan.textContent = songs.length;
+    totalCountSpan.textContent = songs.length;
+    updateSongDisplay();
+    updateScore();
+}
+
+// Обновление отображения текущей песни
+function updateSongDisplay() {
+    currentSongSpan.textContent = currentSongIndex + 1;
+    songHint.textContent = songs[currentSongIndex].hint;
+    
+    // Очистить поле ввода и сообщение
+    songInput.value = '';
+    songInput.disabled = false;
+    submitBtn.disabled = false;
+    songFeedback.textContent = '';
+    songFeedback.className = 'song-feedback';
+    
+    // Если на эту песню уже отвечали, показать результат
+    if (songAnswers[currentSongIndex] !== null) {
+        const isCorrect = songAnswers[currentSongIndex];
+        songInput.value = songs[currentSongIndex].name;
+        songInput.disabled = true;
+        submitBtn.disabled = true;
+        
+        if (isCorrect) {
+            songFeedback.textContent = '✓ Правильно!';
+            songFeedback.className = 'song-feedback correct';
+        } else {
+            songFeedback.textContent = '✗ Неверно. Правильный ответ: ' + songs[currentSongIndex].name;
+            songFeedback.className = 'song-feedback incorrect';
+        }
+    }
+    
+    // Обновить состояние кнопок навигации
+    prevBtn.disabled = currentSongIndex === 0;
+    nextBtn.disabled = currentSongIndex === songs.length - 1;
+    
+    // Остановить текущее воспроизведение
+    stopSong();
+}
+
+// Воспроизведение песни
+function playSong() {
+    stopSong();
+    
+    const audioFile = songs[currentSongIndex].audio;
+    currentAudio = new Audio(audioFile);
+    
+    // Обработка ошибки загрузки аудио
+    currentAudio.onerror = function() {
+        songHint.textContent = '⚠️ Аудиофайл не найден. Проверьте путь к файлу: ' + audioFile;
+        songHint.style.color = '#f44336';
+    };
+    
+    currentAudio.play()
+        .then(() => {
+            isPlaying = true;
+            animateProgress();
+        })
+        .catch(error => {
+            console.error('Ошибка воспроизведения:', error);
+            songHint.textContent = '⚠️ Не удалось воспроизвести аудио. Проверьте подключение.';
+            songHint.style.color = '#f44336';
+        });
+    
+    currentAudio.onended = function() {
+        isPlaying = false;
+        progressBar.style.width = '0%';
+    };
+}
+
+// Пауза
+function pauseSong() {
+    if (currentAudio && isPlaying) {
+        currentAudio.pause();
+        isPlaying = false;
+    }
+}
+
+// Стоп
+function stopSong() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        isPlaying = false;
+        progressBar.style.width = '0%';
+    }
+}
+
+// Анимация прогресса воспроизведения
+function animateProgress() {
+    if (!currentAudio || !isPlaying) return;
+    
+    const updateProgress = () => {
+        if (currentAudio && isPlaying) {
+            const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+            progressBar.style.width = progress + '%';
+            
+            if (isPlaying) {
+                requestAnimationFrame(updateProgress);
+            }
+        }
+    };
+    
+    requestAnimationFrame(updateProgress);
+}
+
+// Проверка ответа
+function checkSongAnswer() {
+    const userAnswer = songInput.value.trim().toLowerCase();
+    const correctAnswer = songs[currentSongIndex].name.toLowerCase();
+    
+    if (userAnswer === '') {
+        songFeedback.textContent = 'Пожалуйста, введите название песни!';
+        songFeedback.className = 'song-feedback incorrect';
+        return;
+    }
+    
+    const isCorrect = userAnswer === correctAnswer || 
+                      userAnswer.includes(correctAnswer) || 
+                      correctAnswer.includes(userAnswer);
+    
+    songAnswers[currentSongIndex] = isCorrect;
+    
+    if (isCorrect) {
+        songFeedback.textContent = '✓ Правильно! Отлично!';
+        songFeedback.className = 'song-feedback correct';
+        createConfetti(); // Используем существующую функцию
+    } else {
+        songFeedback.textContent = '✗ Неверно. Попробуйте ещё раз!';
+        songFeedback.className = 'song-feedback incorrect';
+    }
+    
+    songInput.disabled = true;
+    submitBtn.disabled = true;
+    updateScore();
+    stopSong();
+}
+
+// Обновление счёта
+function updateScore() {
+    const correctCount = songAnswers.filter(answer => answer === true).length;
+    correctCountSpan.textContent = correctCount;
+    
+    // Если все песни угаданы
+    if (correctCount === songs.length) {
+        setTimeout(() => {
+            songFeedback.textContent = '🎉 Поздравляем! Вы угадали все песни!';
+            songFeedback.className = 'song-feedback correct';
+            createConfetti();
+        }, 500);
+    }
+}
+
+// Переключение на предыдущую песню
+function prevSong() {
+    if (currentSongIndex > 0) {
+        currentSongIndex--;
+        updateSongDisplay();
+    }
+}
+
+// Переключение на следующую песню
+function nextSong() {
+    if (currentSongIndex < songs.length - 1) {
+        currentSongIndex++;
+        updateSongDisplay();
+    }
+}
+
+// Добавление обработчиков событий
+playBtn.addEventListener('click', playSong);
+pauseBtn.addEventListener('click', pauseSong);
+stopBtn.addEventListener('click', stopSong);
+submitBtn.addEventListener('click', checkSongAnswer);
+prevBtn.addEventListener('click', prevSong);
+nextBtn.addEventListener('click', nextSong);
+
+// Обработка Enter в поле ввода
+songInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !submitBtn.disabled) {
+        checkSongAnswer();
+    }
+});
+
+// Инициализация игры при загрузке страницы
+document.addEventListener('DOMContentLoaded', initSongGame);
