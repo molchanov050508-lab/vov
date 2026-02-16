@@ -758,15 +758,352 @@ nav {
     transform: scale(1.05) rotateY(5deg);
     box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6);
 }
+/* ================ ИГРА "УГАДАЙ ПЕСНЮ" ================ */
+.song-game {
+    background: linear-gradient(135deg, #2a1e1e, #1a1a1a);
+    border: 2px solid var(--gold);
+    margin-top: 2rem;
+}
 
+.song-game h3 {
+    color: var(--gold);
+    text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game-subtitle {
+    text-align: center;
+    color: var(--gray);
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.song-game-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.song-player {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--gold);
+}
+
+.song-display {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.song-number {
+    font-size: 1.2rem;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.song-progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.song-progress::after {
+    content: '';
+    display: block;
+    width: 0%;
+    height: 100%;
+    background: var(--gold);
+    animation: progressPulse 1s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.player-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.player-btn {
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid var(--gold);
+    color: var(--white);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-btn:hover {
+    background: var(--gold);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.player-btn:hover .player-icon {
+    filter: brightness(0);
+}
+
+.player-icon {
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.song-input-area {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.song-input {
+    flex: 1;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    color: var(--white);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.song-input:focus {
+    outline: none;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.song-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.song-submit {
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 0 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.song-submit:hover:not(:disabled) {
+    background: var(--dark-gold);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.song-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.song-feedback {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-height: 60px;
+    animation: fadeIn 0.5s ease;
+}
+
+.song-feedback.correct {
+    background: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+    border: 2px solid #4caf50;
+}
+
+.song-feedback.incorrect {
+    background: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    border: 2px solid #f44336;
+}
+
+.song-hint {
+    text-align: center;
+    color: var(--gray);
+    margin: 1rem 0;
+    font-style: italic;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.song-controls {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0 1rem;
+}
+
+.song-nav-btn {
+    background: var(--belarus-red);
+    color: var(--white);
+    border: 2px solid var(--gold);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.song-nav-btn:hover:not(:disabled) {
+    background: var(--gold);
+    color: var(--black);
+    transform: scale(1.05);
+}
+
+.song-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.song-score {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--gold);
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+#correctSongsCount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4caf50;
+}
+
+#totalSongsCount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--gold);
+}
 .hero-img {
     width: 100%;
     height: 300px;
+    object-position: center 5%;
     object-fit: cover;
     border-bottom: 3px solid var(--gold);
     transition: transform 0.4s ease;
 }
+/* Блок о геноциде на главной странице */
+.genocide-block {
+    background: linear-gradient(135deg, #2a1e1e 0%, #3d2a2a 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+    border-left: 6px solid #b71c1c;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    color: #f0e6d2;
+}
 
+.genocide-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #ffb74d;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.genocide-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.genocide-text h4 {
+    color: #ffb74d;
+    margin: 1.2rem 0 0.8rem 0;
+    font-size: 1.3rem;
+}
+
+.genocide-text ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.genocide-text li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.khatyn-memory {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.2rem;
+    border-radius: 10px;
+    border-left: 4px solid #ff6f00;
+    margin-top: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.genocide-stat {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    align-content: start;
+}
+
+.stat-item {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 1.2rem 0.5rem;
+    text-align: center;
+    border: 1px solid #b71c1c;
+    backdrop-filter: blur(5px);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffb74d;
+    line-height: 1.2;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .genocide-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .genocide-stat {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .genocide-title {
+        font-size: 1.4rem;
+    }
+}
 .hero-card:hover .hero-img {
     transform: scale(1.1);
 }
